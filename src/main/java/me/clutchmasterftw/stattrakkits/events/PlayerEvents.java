@@ -193,7 +193,7 @@ public class PlayerEvents implements Listener {
                     // Item has StatTrak
                     Material material = item.getType();
                     if(!Arrays.asList(ApplyStattrakKit.axes).contains(material)) return;
-                    
+
                     Location location = e.getBlock().getLocation();
                     for(Map<?, ?> block:StattrakKits.wreckRegenConfig.getMapList("blocks-to-regen")) {
                         Location blockLocation = new Location(Bukkit.getWorld("world"), (int) block.get("x"), (int) block.get("y"), (int) block.get("z"));

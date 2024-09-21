@@ -126,6 +126,12 @@ public class ApplyStattrakKit implements Listener {
         PlayerInventory playerInventory = player.getInventory();
         ItemStack item = playerInventory.getItemInMainHand();
         ItemMeta meta = item.getItemMeta();
+
+        if(meta.getPersistentDataContainer().has(StattrakKits.hasStatTrak)) {
+            player.sendMessage(StattrakKits.PREFIX + ChatColor.RED + "This item already has a StatTrak™ Kit attached!");
+            return;
+        }
+
         List<String> lore = meta.getLore();
         if(lore == null)  {
             lore = new ArrayList<>();
@@ -158,18 +164,31 @@ public class ApplyStattrakKit implements Listener {
         lore.add(ChatColor.GOLD + "StatTrak™ Kit Applied");
         if(type.equals("axe")) {
             // Tracks player kills, damage dealt, and blocks broken (from worldguard)
+            lore = initializeStat(new String[]{"kills", "damage", "blocks"}, lore);
+            data.set(StattrakKits.kills, PersistentDataType.INTEGER, 0);
+            data.set(StattrakKits.damageDealt, PersistentDataType.INTEGER, 0);
+            data.set(StattrakKits.blocksBroken, PersistentDataType.INTEGER, 0);
         } else if(type.equals("pickaxe")) {
             // Tracks blocks broken (from prison)
             lore = initializeStat(new String[]{"blocks"}, lore);
             data.set(StattrakKits.blocksBroken, PersistentDataType.INTEGER, 0);
         } else if(type.equals("sword")) {
             // Tracks player kills and damage dealt
+            lore = initializeStat(new String[]{"kills", "damage"}, lore);
+            data.set(StattrakKits.kills, PersistentDataType.INTEGER, 0);
+            data.set(StattrakKits.damageDealt, PersistentDataType.INTEGER, 0);
         } else if(type.equals("armor")) {
             // Tracks protection
+            lore = initializeStat(new String[]{"protection"}, lore);
+            data.set(StattrakKits.damageTaken, PersistentDataType.INTEGER, 0);
         } else if(type.equals("shield")) {
             // Tracks amount of blocks
+            lore = initializeStat(new String[]{"shields"}, lore);
+            data.set(StattrakKits.shields, PersistentDataType.INTEGER, 0);
         } else if(type.equals("fishingRod")) {
             // Tracks amount of fish found
+            lore = initializeStat(new String[]{"fish"}, lore);
+            data.set(StattrakKits.fishCaught, PersistentDataType.INTEGER, 0);
         }
 
         meta.setLore(lore);
