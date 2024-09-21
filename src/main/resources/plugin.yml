@@ -1,0 +1,9 @@
+name: StattrakKits
+version: '${project.version}'
+main: me.clutchmasterftw.stattrakkits.StattrakKits
+api-version: '1.19'
+depend: [Prison, ItemsAdder, WorldGuard]
+commands:
+  stattraksoundtoggle:
+    description: Toggles sounds for StatTrak™ tools on or off.
+    usage: /stattraksoundtoggle
