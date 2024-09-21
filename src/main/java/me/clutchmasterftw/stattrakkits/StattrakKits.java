@@ -6,6 +6,8 @@ import me.clutchmasterftw.stattrakkits.events.PrisonBlockBreaks;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.logging.Logger;
@@ -18,6 +20,8 @@ public final class StattrakKits extends JavaPlugin {
     }
 
     private static StattrakKits plugin;
+
+    public static FileConfiguration wreckRegenConfig;
 
     public static NamespacedKey hasStatTrak;
     public static NamespacedKey enabledStatTrakSounds;
@@ -50,6 +54,14 @@ public final class StattrakKits extends JavaPlugin {
         kills = new NamespacedKey(getPlugin(), "kills");
         shields = new NamespacedKey(getPlugin(), "shields");
         fishCaught = new NamespacedKey(getPlugin(), "fishCaught");
+
+        // Get WreckRegen Config file
+        Plugin wreckRegen = Bukkit.getServer().getPluginManager().getPlugin("WreckRegen");
+        if(wreckRegen != null && wreckRegen.isEnabled()) {
+            wreckRegenConfig = wreckRegen.getConfig();
+        } else {
+            logger.severe("There was an issue attempting to hook into WreckRegen.");
+        }
 
 
         logger.info("\n  _________ __          __ ___________              __      ____  __.__  __          \n" +

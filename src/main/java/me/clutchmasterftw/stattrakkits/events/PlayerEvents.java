@@ -1,13 +1,14 @@
 package me.clutchmasterftw.stattrakkits.events;
 
 import me.clutchmasterftw.stattrakkits.StattrakKits;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -19,6 +20,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import static me.clutchmasterftw.stattrakkits.utilities.Utilities.manipulateStat;
 
@@ -46,11 +48,7 @@ public class PlayerEvents implements Listener {
                 if(data.has(StattrakKits.hasStatTrak)) {
                     if(data.get(StattrakKits.hasStatTrak, PersistentDataType.BOOLEAN)) {
                         // Item has StatTrak
-                        Location playerLocation = killer.getLocation();
-
-                        manipulateStat(item, StattrakKits.blocksBroken, 1, 100, "Confirmed Kills");
-
-                        killer.playSound(playerLocation, Sound.BLOCK_DISPENSER_DISPENSE, 0.1F, 0.5F);
+                        manipulateStat(item, StattrakKits.blocksBroken, 1, 100, "Confirmed Kills", killer);
                     }
                 }
             }
@@ -74,11 +72,7 @@ public class PlayerEvents implements Listener {
                         if (data.has(StattrakKits.hasStatTrak)) {
                             if (data.get(StattrakKits.hasStatTrak, PersistentDataType.BOOLEAN)) {
                                 // Item has StatTrak
-                                Location playerLocation = player.getLocation();
-
-                                manipulateStat(item, StattrakKits.damageTaken, damage, 10000, "Damage Taken");
-
-                                player.playSound(playerLocation, Sound.BLOCK_DISPENSER_DISPENSE, 0.1F, 0.5F);
+                                manipulateStat(item, StattrakKits.damageTaken, damage, 10000, "Damage Taken", player);
                             }
                         }
                     }
@@ -113,11 +107,7 @@ public class PlayerEvents implements Listener {
                     if(data.has(StattrakKits.hasStatTrak)) {
                         if(data.get(StattrakKits.hasStatTrak, PersistentDataType.BOOLEAN)) {
                             // Item has StatTrak
-                            Location playerLocation = victim.getLocation();
-
-                            manipulateStat(shield, StattrakKits.shields, 1, 100, "Shield Blocks");
-
-                            victim.playSound(playerLocation, Sound.BLOCK_DISPENSER_DISPENSE, 0.1F, 0.5F);
+                            manipulateStat(shield, StattrakKits.shields, 1, 100, "Shield Blocks", victim);
                         }
                     }
 
@@ -141,11 +131,7 @@ public class PlayerEvents implements Listener {
                     if(data.has(StattrakKits.hasStatTrak)) {
                         if(data.get(StattrakKits.hasStatTrak, PersistentDataType.BOOLEAN)) {
                             // Item has StatTrak
-                            Location playerLocation = damager.getLocation();
-
-                            manipulateStat(item, StattrakKits.damageDealt, damage, 10000, "Damage Dealt");
-
-                            damager.playSound(playerLocation, Sound.BLOCK_DISPENSER_DISPENSE, 0.1F, 0.5F);
+                            manipulateStat(item, StattrakKits.damageDealt, damage, 10000, "Damage Dealt", damager);
                         }
                     }
                 }
@@ -182,15 +168,41 @@ public class PlayerEvents implements Listener {
                         if(data.has(StattrakKits.hasStatTrak)) {
                             if(data.get(StattrakKits.hasStatTrak, PersistentDataType.BOOLEAN)) {
                                 // Item has StatTrak
-                                Location playerLocation = player.getLocation();
-
-                                manipulateStat(fishingRod, StattrakKits.fishCaught, 1, 1000, "Fish Reeled");
-
-                                player.playSound(playerLocation, Sound.BLOCK_DISPENSER_DISPENSE, 0.1F, 0.5F);
+                                manipulateStat(fishingRod, StattrakKits.fishCaught, 1, 1000, "Fish Reeled", player);
                             }
                         }
 
                         break;
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onWreckRegenBlockBreak(BlockBreakEvent e) {
+        if(!e.isCancelled()) {
+            Player player = e.getPlayer();
+            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemMeta meta = item.getItemMeta();
+            if(meta == null) return;
+
+            PersistentDataContainer data = meta.getPersistentDataContainer();
+            if(data.has(StattrakKits.hasStatTrak)) {
+                if(data.get(StattrakKits.hasStatTrak, PersistentDataType.BOOLEAN)) {
+                    // Item has StatTrak
+                    Material material = item.getType();
+                    if(!Arrays.asList(ApplyStattrakKit.axes).contains(material)) return;
+                    
+                    Location location = e.getBlock().getLocation();
+                    for(Map<?, ?> block:StattrakKits.wreckRegenConfig.getMapList("blocks-to-regen")) {
+                        Location blockLocation = new Location(Bukkit.getWorld("world"), (int) block.get("x"), (int) block.get("y"), (int) block.get("z"));
+
+                        if(location.equals(blockLocation)) {
+                            manipulateStat(item, StattrakKits.blocksBroken, 1, 10000, "Blocks Broken", player);
+
+                            break;
+                        }
                     }
                 }
             }

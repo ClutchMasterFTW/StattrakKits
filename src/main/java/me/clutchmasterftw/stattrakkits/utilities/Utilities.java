@@ -1,7 +1,11 @@
 package me.clutchmasterftw.stattrakkits.utilities;
 
+import me.clutchmasterftw.stattrakkits.StattrakKits;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -28,7 +32,7 @@ public class Utilities {
         return formatted;
     }
 
-    public static void manipulateStat(ItemStack item, NamespacedKey key, int amount, int shadeMax, String searchTerm) {
+    public static void manipulateStat(ItemStack item, NamespacedKey key, int amount, int shadeMax, String searchTerm, Player player) {
         ItemMeta meta = item.getItemMeta();
         List<String> lore = meta.getLore();
         PersistentDataContainer data = meta.getPersistentDataContainer();
@@ -49,5 +53,12 @@ public class Utilities {
 
         meta.setLore(lore);
         item.setItemMeta(meta);
+
+        PersistentDataContainer playerData = player.getPersistentDataContainer();
+        if(!playerData.has(StattrakKits.enabledStatTrakSounds)) playerData.set(StattrakKits.enabledStatTrakSounds, PersistentDataType.BOOLEAN, true);
+        if(playerData.get(StattrakKits.enabledStatTrakSounds, PersistentDataType.BOOLEAN)) {
+            Location playerLocation = player.getLocation();
+            player.playSound(playerLocation, Sound.BLOCK_DISPENSER_DISPENSE, 0.1F, 0.5F);
+        }
     }
 }

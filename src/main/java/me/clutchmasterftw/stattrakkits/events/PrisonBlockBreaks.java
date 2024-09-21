@@ -36,11 +36,7 @@ public class PrisonBlockBreaks implements Listener {
                 if(data.get(StattrakKits.hasStatTrak, PersistentDataType.BOOLEAN)) {
                     // Item has StatTrak
                     Player player = e.getPlayer();
-                    Location playerLocation = player.getLocation();
-
-                    manipulateStat(item, StattrakKits.kills, 1, 100000, "Blocks Broken");
-
-                    player.playSound(playerLocation, Sound.BLOCK_DISPENSER_DISPENSE, 0.1F, 0.5F);
+                    manipulateStat(item, StattrakKits.kills, 1, 100000, "Blocks Broken", player);
                 }
             }
         }
